@@ -1,0 +1,11 @@
+services:
+  schedule_db:
+    image: mysql:8.0.40-debian
+    ports:
+      - "3000:3306" # host:container
+    environment:
+      MYSQL_DATABASE: 'schedule_db'
+      MYSQL_USER: 'philip'
+      MYSQL_PASSWORD: 'StrongPassword'
+      MYSQL_ROOT_PASSWORD: 'RootPassword'
+
