@@ -1,6 +1,6 @@
 package com.aviobook.schedule.controller.data.request;
 
-import com.aviobook.schedule.controller.validation.ValidFlightRequest;
+import com.aviobook.schedule.controller.data.validation.ValidFlightRequest;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

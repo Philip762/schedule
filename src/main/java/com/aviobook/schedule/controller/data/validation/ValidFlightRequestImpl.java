@@ -1,4 +1,4 @@
-package com.aviobook.schedule.controller.validation;
+package com.aviobook.schedule.controller.data.validation;
 
 import com.aviobook.schedule.controller.data.request.ScheduleFlightRequest;
 import jakarta.validation.ConstraintValidator;

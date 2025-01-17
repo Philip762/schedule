@@ -6,13 +6,13 @@ import com.aviobook.schedule.controller.data.request.ScheduleFlightRequest;
 
 public interface FlightSchedulingService {
 
-    void scheduleFlight(ScheduleFlightRequest scheduleFlightRequest);
+    FlightDetailsDto scheduleFlight(ScheduleFlightRequest scheduleFlightRequest);
 
     FlightListDto getAllScheduledFlights();
 
     FlightDetailsDto getScheduledFlightDetailsById(int id);
 
-    // void cancelFlight();
+    void cancelFlight(int flightId);
 
 //    void getScheduledFlight(int id);
 

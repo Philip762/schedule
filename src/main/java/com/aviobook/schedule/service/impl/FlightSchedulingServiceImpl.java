@@ -10,6 +10,7 @@ import com.aviobook.schedule.repository.FlightRepository;
 import com.aviobook.schedule.service.FlightSchedulingService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,7 +23,7 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
     }
 
     @Override
-    public void scheduleFlight(ScheduleFlightRequest scheduleFlightRequest) {
+    public FlightDetailsDto scheduleFlight(ScheduleFlightRequest scheduleFlightRequest) {
         // TODO: can a flight with 2 times the same number exist???
         Flight flight = new Flight(
                 scheduleFlightRequest.number(),
@@ -32,7 +33,8 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
                 scheduleFlightRequest.arrivalTime()
         );
 
-        flightRepository.save(flight);
+        Flight scheduledFlight = flightRepository.save(flight);
+        return this.flightToDto(scheduledFlight);
     }
 
     @Override
@@ -50,6 +52,22 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
         Flight flight = flightRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found"));
 
+        return this.flightToDto(flight);
+    }
+
+    @Override
+    public void cancelFlight(int flightId) {
+        Flight flightToCancel = flightRepository.findById(flightId)
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found"));
+
+        if (flightToCancel.getArrivalTime().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Completed flight cannot be cancelled");
+        }
+
+        flightRepository.deleteById(flightId);
+    }
+
+    private FlightDetailsDto flightToDto(Flight flight) {
         return new FlightDetailsDto(
                 flight.getId(),
                 flight.getNumber(),

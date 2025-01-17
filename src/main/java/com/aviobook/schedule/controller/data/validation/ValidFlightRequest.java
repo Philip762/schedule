@@ -1,6 +1,7 @@
-package com.aviobook.schedule.controller.validation;
+package com.aviobook.schedule.controller.data.validation;
 
 import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,4 +13,8 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = ValidFlightRequestImpl.class) // custom validator
 public @interface ValidFlightRequest {
     String message() default "The arrival time must be after the departure time";
+
+    Class<?>[] groups() default {}; // required by springboot
+
+    Class<? extends Payload>[] payload() default {}; // required by springboot
 }

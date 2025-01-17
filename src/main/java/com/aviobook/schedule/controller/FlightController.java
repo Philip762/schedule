@@ -5,9 +5,12 @@ import com.aviobook.schedule.controller.data.dto.FlightListDto;
 import com.aviobook.schedule.controller.data.request.ScheduleFlightRequest;
 import com.aviobook.schedule.service.FlightSchedulingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/flight")
@@ -21,9 +24,10 @@ public class FlightController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> scheduleFlight(@RequestBody @Valid ScheduleFlightRequest scheduleFlightRequest) {
-        flightSchedulingService.scheduleFlight(scheduleFlightRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<FlightDetailsDto> scheduleFlight(@RequestBody @Valid ScheduleFlightRequest scheduleFlightRequest, HttpServletRequest request) {
+        FlightDetailsDto scheduledFlight = flightSchedulingService.scheduleFlight(scheduleFlightRequest);
+        URI location = URI.create(String.format("%s/%s", request.getRequestURI(), scheduledFlight.id()));
+        return ResponseEntity.created(location).body(scheduledFlight);
     }
 
     @GetMapping
@@ -36,6 +40,11 @@ public class FlightController {
     public ResponseEntity<FlightDetailsDto> getScheduledFlightDetails(@RequestParam int id) {
         FlightDetailsDto flightDetailsDto = flightSchedulingService.getScheduledFlightDetailsById(id);
         return ResponseEntity.ok(flightDetailsDto);
+    }
 
+    @DeleteMapping(path = ":/id")
+    public ResponseEntity<Void> cancelScheduledFlight(@RequestParam int flightId) {
+        flightSchedulingService.cancelFlight(flightId);
+        return ResponseEntity.ok().build();
     }
 }
