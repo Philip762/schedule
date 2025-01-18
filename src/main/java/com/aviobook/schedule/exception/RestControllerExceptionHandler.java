@@ -13,7 +13,7 @@ import java.util.List;
 public class RestControllerExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class) // Exception thrown when request body is not valid
-    public ResponseEntity<ValidationExceptionDto> handleMethodArgumentNotValidException(
+    public ResponseEntity<ErrorResponseDto> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException exception
     ) {
         List<String> errors = exception.getAllErrors()
@@ -21,11 +21,26 @@ public class RestControllerExceptionHandler {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .toList();
 
-        ValidationExceptionDto response = new ValidationExceptionDto("The given request is invalid", errors);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        ErrorResponseDto responseBody = new ErrorResponseDto("The given request is invalid", errors);
+        return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
     }
 
-    public record ValidationExceptionDto(String message, List<String> details) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(ResourceNotFoundException exception) {
+        String message = String.format("%s not found", exception.getResourceClass().getSimpleName());
+        ErrorResponseDto responseBody = new ErrorResponseDto(message, null);
+        return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateFlightNumberException.class)
+    public ResponseEntity<ErrorResponseDto> handleDuplicateFlightNumberException(
+            DuplicateFlightNumberException exception
+    ) {
+        ErrorResponseDto responseBody = new ErrorResponseDto("A flight with the given number already exists", null);
+        return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+    }
+
+    public record ErrorResponseDto(String message, List<String> details) {
         // Error response body
     }
 }

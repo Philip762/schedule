@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @DepartureBeforeArrival
 public record ScheduleFlightRequest(
         @NotBlank(message = "Flight number is required")
-        @Pattern(regexp = "^[A-Z]{2}[0-9]{1,4}$", message = "Flight number must be two uppercase letters followed by 4 or less digits")
+        @Pattern(regexp = "^[A-Z]{2}[0-9]{1,4}$", message = "Flight number must be two uppercase letters followed by 1 - 4 digits")
         String number,
 
         @NotBlank(message = "Departure airport is required")

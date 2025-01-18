@@ -5,6 +5,7 @@ import com.aviobook.schedule.controller.data.dto.FlightListDto;
 import com.aviobook.schedule.controller.data.dto.FlightSummaryDto;
 import com.aviobook.schedule.controller.data.request.ScheduleFlightRequest;
 import com.aviobook.schedule.domain.Flight;
+import com.aviobook.schedule.exception.DuplicateFlightNumberException;
 import com.aviobook.schedule.exception.ResourceNotFoundException;
 import com.aviobook.schedule.repository.FlightRepository;
 import com.aviobook.schedule.repository.FlightSearchSpecification;
@@ -35,6 +36,11 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
 
     @Override
     public FlightDetailsDto scheduleFlight(ScheduleFlightRequest scheduleFlightRequest) {
+        if (flightRepository.existsByNumber(scheduleFlightRequest.number())) {
+            String message = String.format("Flight with number %s already exists", scheduleFlightRequest.number());
+            throw new DuplicateFlightNumberException(message);
+        }
+
         Flight flight = Flight.builder()
                 .number(scheduleFlightRequest.number())
                 .departure(scheduleFlightRequest.departure())
@@ -56,7 +62,7 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
     @Override
     public FlightDetailsDto getScheduledFlightDetailsById(int id) {
         Flight flight = flightRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Flight not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found", Flight.class));
 
         return this.flightToDto(flight);
     }
@@ -64,7 +70,7 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
     @Override
     public void cancelScheduledFlightById(int id) {
         if (!flightRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Flight not found");
+            throw new ResourceNotFoundException("Flight not found", Flight.class);
         }
 
         flightRepository.deleteById(id);
