@@ -37,8 +37,8 @@ public class FlightController {
         return ResponseEntity.ok(flightListDto);
     }
 
-    @GetMapping(path = "/:id")
-    public ResponseEntity<FlightDto> getScheduledFlightDetails(@RequestParam int id) {
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<FlightDto> getScheduledFlightDetails(@PathVariable int id) {
         FlightDto flightDetailsDto = flightSchedulingService.getScheduledFlightDetailsById(id);
         return ResponseEntity.ok(flightDetailsDto);
     }
@@ -53,9 +53,9 @@ public class FlightController {
         return ResponseEntity.ok(flightListDto);
     }
 
-    @DeleteMapping(path = ":/id")
-    public ResponseEntity<Void> cancelScheduledFlight(@RequestParam int flightId) {
-        flightSchedulingService.cancelScheduledFlightById(flightId);
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> cancelScheduledFlight(@PathVariable int id) {
+        flightSchedulingService.cancelScheduledFlightById(id);
         return ResponseEntity.ok().build();
     }
 }
