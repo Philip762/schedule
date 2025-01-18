@@ -27,7 +27,7 @@ public class OpenApiConfig {
         Info info = new Info()
                 .title("Flight scheduling API")
                 .version("1.0")
-                .contact(contact)
+                //.contact(contact)
                 .summary("This API is used to schedule and manage airline flights.");
 
         return new OpenAPI().info(info);//.servers(List.of(devServer, prodServer));
