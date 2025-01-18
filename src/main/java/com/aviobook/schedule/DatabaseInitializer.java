@@ -71,7 +71,6 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .arrivalTime(ARRIVAL_TIME)
                     .details(createRandomFlightDetails())
                     .build(),
-
             Flight.builder()
                     .number("BE142")
                     .departure("DBBR")
@@ -80,7 +79,6 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .arrivalTime(ARRIVAL_TIME.plusHours(6))
                     .details(createRandomFlightDetails())
                     .build(),
-
             Flight.builder()
                     .number("BE782")
                     .departure("DBBR")
@@ -89,7 +87,6 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .arrivalTime(ARRIVAL_TIME.plusDays(1))
                     .details(createRandomFlightDetails())
                     .build(),
-
             Flight.builder()
                     .number("BE333")
                     .departure("MEER")
@@ -98,7 +95,6 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .arrivalTime(ARRIVAL_TIME)
                     .details(createRandomFlightDetails())
                     .build(),
-
             Flight.builder()
                     .number("BE983")
                     .departure("MEER")

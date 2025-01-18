@@ -19,12 +19,8 @@ public class MaxFlightDurationImpl implements ConstraintValidator<MaxFlightDurat
     }
 
     @Override
-    public boolean isValid(
-            ScheduleFlightRequest scheduleFlightRequest,
-            ConstraintValidatorContext constraintValidatorContext
-    ) {
-        Duration flightDuration =
-                Duration.between(scheduleFlightRequest.departureTime(), scheduleFlightRequest.arrivalTime());
+    public boolean isValid(ScheduleFlightRequest scheduleFlightRequest, ConstraintValidatorContext constraintValidatorContext) {
+        Duration flightDuration = Duration.between(scheduleFlightRequest.departureTime(), scheduleFlightRequest.arrivalTime());
         return flightDuration.compareTo(maxFlightDuration) <= 0;
     }
 }

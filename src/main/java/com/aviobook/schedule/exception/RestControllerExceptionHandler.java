@@ -36,8 +36,7 @@ public class RestControllerExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleDuplicateFlightNumberException(
             DuplicateFlightNumberException exception
     ) {
-        ErrorResponseDto responseBody =
-                new ErrorResponseDto("A flight with the given number already exists", null);
+        ErrorResponseDto responseBody = new ErrorResponseDto("A flight with the given number already exists", null);
         return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
     }
 

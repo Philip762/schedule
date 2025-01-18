@@ -8,10 +8,7 @@ import jakarta.validation.ConstraintValidatorContext;
 public class DepartureBeforeArrivalImpl implements ConstraintValidator<DepartureBeforeArrival, ScheduleFlightRequest> {
 
     @Override
-    public boolean isValid(
-            ScheduleFlightRequest scheduleFlightRequest,
-            ConstraintValidatorContext constraintValidatorContext
-    ) {
+    public boolean isValid(ScheduleFlightRequest scheduleFlightRequest, ConstraintValidatorContext constraintValidatorContext) {
         return scheduleFlightRequest.arrivalTime().isAfter(scheduleFlightRequest.departureTime());
     }
 }
