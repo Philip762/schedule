@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class FlightSchedulingServiceImpl implements FlightSchedulingService {
@@ -100,8 +101,17 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
     }
 
     private FlightListDto flightListToDto(List<Flight> flights) {
+        Function<Flight, FlightSummaryDto> mapToFlightSummaryDto = flight -> FlightSummaryDto.builder()
+                .id(flight.getId())
+                .number(flight.getNumber())
+                .departure(flight.getDeparture())
+                .destination(flight.getDestination())
+                .departureTime(flight.getDepartureTime())
+                .arrivalTime(flight.getArrivalTime())
+                .build();
+
         List<FlightSummaryDto> scheduledFlightDtos = flights.stream()
-                .map(flight -> FlightSummaryDto.builder().id(flight.getId()).number(flight.getNumber()).build())
+                .map(mapToFlightSummaryDto)
                 .toList();
 
         return new FlightListDto(scheduledFlightDtos);
