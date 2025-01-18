@@ -8,6 +8,7 @@ import com.aviobook.schedule.domain.Flight;
 import com.aviobook.schedule.exception.ResourceNotFoundException;
 import com.aviobook.schedule.repository.FlightRepository;
 import com.aviobook.schedule.service.FlightSchedulingService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -40,7 +41,7 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
 
     @Override
     public FlightListDto getAllScheduledFlights() {
-        List<Flight> scheduledFlights = flightRepository.findAll();
+        List<Flight> scheduledFlights = flightRepository.findAll(Sort.by(Sort.Direction.ASC, "departureTime"));
         return flightListToDto(scheduledFlights);
     }
 

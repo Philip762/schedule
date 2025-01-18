@@ -1,21 +1,21 @@
-package com.aviobook.schedule.controller;
+package com.aviobook.schedule.exception;
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
 @RestControllerAdvice
-public class ControllerExceptionHandler {
+public class RestControllerExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ValidationExceptionDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+    @ExceptionHandler(MethodArgumentNotValidException.class) // Exception thrown when request body is not valid
+    public ResponseEntity<ValidationExceptionDto> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException exception
+    ) {
         List<String> errors = exception.getAllErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -26,5 +26,6 @@ public class ControllerExceptionHandler {
     }
 
     public record ValidationExceptionDto(String message, List<String> details) {
+        // Error response body
     }
 }
