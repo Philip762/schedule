@@ -1,4 +1,4 @@
-package com.aviobook.schedule.integration.mock;
+package com.aviobook.schedule.service;
 
 import com.aviobook.schedule.exception.ResourceNotFoundException;
 import com.aviobook.schedule.repository.FlightRepository;
