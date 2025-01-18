@@ -44,7 +44,7 @@ public class FlightController {
 
     @DeleteMapping(path = ":/id")
     public ResponseEntity<Void> cancelScheduledFlight(@RequestParam int flightId) {
-        flightSchedulingService.cancelFlight(flightId);
+        flightSchedulingService.cancelScheduledFlightById(flightId);
         return ResponseEntity.ok().build();
     }
 }

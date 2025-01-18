@@ -12,9 +12,7 @@ public interface FlightSchedulingService {
 
     FlightDetailsDto getScheduledFlightDetailsById(int id);
 
-    void cancelFlight(int flightId);
-
-//    void getScheduledFlight(int id);
+    void cancelScheduledFlightById(int id);
 
     //  void searchScheduledFlights();
 

@@ -11,6 +11,7 @@ import com.aviobook.schedule.service.FlightSchedulingService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -25,12 +26,13 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
     @Override
     public FlightDetailsDto scheduleFlight(ScheduleFlightRequest scheduleFlightRequest) {
         // TODO: can a flight with 2 times the same number exist???
+        // TODO: validate that minutes ia a multiple of 5
         Flight flight = new Flight(
                 scheduleFlightRequest.number(),
                 scheduleFlightRequest.departure(),
                 scheduleFlightRequest.destination(),
-                scheduleFlightRequest.departureTime(),
-                scheduleFlightRequest.arrivalTime()
+                scheduleFlightRequest.departureTime().truncatedTo(ChronoUnit.MINUTES),
+                scheduleFlightRequest.arrivalTime().truncatedTo(ChronoUnit.MINUTES)
         );
 
         Flight scheduledFlight = flightRepository.save(flight);
@@ -56,15 +58,15 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
     }
 
     @Override
-    public void cancelFlight(int flightId) {
-        Flight flightToCancel = flightRepository.findById(flightId)
+    public void cancelScheduledFlightById(int id) {
+        Flight flightToCancel = flightRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found"));
 
         if (flightToCancel.getArrivalTime().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Completed flight cannot be cancelled");
         }
 
-        flightRepository.deleteById(flightId);
+        flightRepository.deleteById(id);
     }
 
     private FlightDetailsDto flightToDto(Flight flight) {
