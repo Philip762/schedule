@@ -7,19 +7,27 @@ import com.aviobook.schedule.controller.data.request.ScheduleFlightRequest;
 import com.aviobook.schedule.domain.Flight;
 import com.aviobook.schedule.exception.ResourceNotFoundException;
 import com.aviobook.schedule.repository.FlightRepository;
+import com.aviobook.schedule.repository.FlightSearchSpecification;
 import com.aviobook.schedule.service.FlightSchedulingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
 public class FlightSchedulingServiceImpl implements FlightSchedulingService {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(FlightSchedulingServiceImpl.class);
+
+    private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "departureTime");
+
     private final FlightRepository flightRepository;
+
 
     public FlightSchedulingServiceImpl(FlightRepository flightRepository) {
         this.flightRepository = flightRepository;
@@ -41,7 +49,7 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
 
     @Override
     public FlightListDto getAllScheduledFlights() {
-        List<Flight> scheduledFlights = flightRepository.findAll(Sort.by(Sort.Direction.ASC, "departureTime"));
+        List<Flight> scheduledFlights = flightRepository.findAll(DEFAULT_SORT);
         return flightListToDto(scheduledFlights);
     }
 
@@ -55,11 +63,8 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
 
     @Override
     public void cancelScheduledFlightById(int id) {
-        Flight flightToCancel = flightRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Flight not found"));
-
-        if (flightToCancel.getArrivalTime().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Completed flight cannot be cancelled");
+        if (!flightRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Flight not found");
         }
 
         flightRepository.deleteById(id);
@@ -67,7 +72,13 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
 
     @Override
     public FlightListDto searchScheduledFlights(String departure, String destination, LocalDate date) {
-        List<Flight> scheduledFlights = flightRepository.findAll();
+        LOGGER.debug("Searching for a flight between {} and {} on date {}", departure, destination, date);
+        Specification<Flight> searchQuery = Specification
+                .where(FlightSearchSpecification.byDeparture(departure))
+                .and(FlightSearchSpecification.byDestination(destination))
+                .and(FlightSearchSpecification.byDate(date));
+
+        List<Flight> scheduledFlights = flightRepository.findAll(searchQuery, DEFAULT_SORT);
         return flightListToDto(scheduledFlights);
     }
 

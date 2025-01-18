@@ -49,7 +49,8 @@ public class FlightController {
             @RequestParam(required = false) String destination,
             @RequestParam(required = false) LocalDate date
     ) {
-        return ResponseEntity.ok().build();
+        FlightListDto flightListDto = flightSchedulingService.searchScheduledFlights(departure, destination, date);
+        return ResponseEntity.ok(flightListDto);
     }
 
     @DeleteMapping(path = ":/id")
