@@ -10,6 +10,7 @@ import com.aviobook.schedule.repository.FlightRepository;
 import com.aviobook.schedule.service.FlightSchedulingService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -25,15 +26,13 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
 
     @Override
     public FlightDetailsDto scheduleFlight(ScheduleFlightRequest scheduleFlightRequest) {
-        // TODO: can a flight with 2 times the same number exist???
-        // TODO: validate that minutes ia a multiple of 5
-        Flight flight = new Flight(
-                scheduleFlightRequest.number(),
-                scheduleFlightRequest.departure(),
-                scheduleFlightRequest.destination(),
-                scheduleFlightRequest.departureTime().truncatedTo(ChronoUnit.MINUTES),
-                scheduleFlightRequest.arrivalTime().truncatedTo(ChronoUnit.MINUTES)
-        );
+        Flight flight = Flight.builder()
+                .number(scheduleFlightRequest.number())
+                .departure(scheduleFlightRequest.departure())
+                .destination(scheduleFlightRequest.destination())
+                .departureTime(scheduleFlightRequest.departureTime().truncatedTo(ChronoUnit.MINUTES))
+                .arrivalTime(scheduleFlightRequest.arrivalTime().truncatedTo(ChronoUnit.MINUTES))
+                .build();
 
         Flight scheduledFlight = flightRepository.save(flight);
         return this.flightToDto(scheduledFlight);
@@ -42,11 +41,7 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
     @Override
     public FlightListDto getAllScheduledFlights() {
         List<Flight> scheduledFlights = flightRepository.findAll();
-        List<FlightSummaryDto> scheduledFlightDtos = scheduledFlights.stream()
-                .map(flight -> new FlightSummaryDto(flight.getId(), flight.getNumber()))
-                .toList();
-
-        return new FlightListDto(scheduledFlightDtos);
+        return flightListToDto(scheduledFlights);
     }
 
     @Override
@@ -69,14 +64,28 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
         flightRepository.deleteById(id);
     }
 
+    @Override
+    public FlightListDto searchScheduledFlights(String departure, String destination, LocalDate date) {
+        List<Flight> scheduledFlights = flightRepository.findAll();
+        return flightListToDto(scheduledFlights);
+    }
+
     private FlightDetailsDto flightToDto(Flight flight) {
-        return new FlightDetailsDto(
-                flight.getId(),
-                flight.getNumber(),
-                flight.getDeparture(),
-                flight.getDestination(),
-                flight.getDepartureTime(),
-                flight.getArrivalTime()
-        );
+        return FlightDetailsDto.builder()
+                .id(flight.getId())
+                .number(flight.getNumber())
+                .departure(flight.getDeparture())
+                .destination(flight.getDestination())
+                .departureTime(flight.getDepartureTime())
+                .arrivalTime(flight.getArrivalTime())
+                .build();
+    }
+
+    private FlightListDto flightListToDto(List<Flight> flights) {
+        List<FlightSummaryDto> scheduledFlightDtos = flights.stream()
+                .map(flight -> FlightSummaryDto.builder().id(flight.getId()).number(flight.getNumber()).build())
+                .toList();
+
+        return new FlightListDto(scheduledFlightDtos);
     }
 }

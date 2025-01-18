@@ -4,7 +4,7 @@ import com.aviobook.schedule.controller.data.request.ScheduleFlightRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class ValidFlightRequestImpl implements ConstraintValidator<ValidFlightRequest, ScheduleFlightRequest> {
+public class DepartureBeforeArrivalImpl implements ConstraintValidator<DepartureBeforeArrival, ScheduleFlightRequest> {
 
     @Override
     public boolean isValid(ScheduleFlightRequest scheduleFlightRequest, ConstraintValidatorContext constraintValidatorContext) {

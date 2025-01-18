@@ -1,6 +1,7 @@
 package com.aviobook.schedule.controller.data.request;
 
-import com.aviobook.schedule.controller.data.validation.ValidFlightRequest;
+import com.aviobook.schedule.controller.data.validation.DepartureBeforeArrival;
+import com.aviobook.schedule.controller.data.validation.MaxFlightDuration;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +9,8 @@ import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDateTime;
 
-@ValidFlightRequest
+@MaxFlightDuration(hours = 10)
+@DepartureBeforeArrival
 public record ScheduleFlightRequest(
         @NotBlank(message = "Flight number is required")
         @Pattern(regexp = "^[A-Z]{2}[0-9]{1,4}$", message = "Flight number must be two uppercase letters followed by 4 or less digits")

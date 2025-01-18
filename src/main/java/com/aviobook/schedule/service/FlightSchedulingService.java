@@ -4,6 +4,8 @@ import com.aviobook.schedule.controller.data.dto.FlightDetailsDto;
 import com.aviobook.schedule.controller.data.dto.FlightListDto;
 import com.aviobook.schedule.controller.data.request.ScheduleFlightRequest;
 
+import java.time.LocalDate;
+
 public interface FlightSchedulingService {
 
     FlightDetailsDto scheduleFlight(ScheduleFlightRequest scheduleFlightRequest);
@@ -14,6 +16,5 @@ public interface FlightSchedulingService {
 
     void cancelScheduledFlightById(int id);
 
-    //  void searchScheduledFlights();
-
+    FlightListDto searchScheduledFlights(String departure, String destination, LocalDate date);
 }

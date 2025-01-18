@@ -10,8 +10,8 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE) // This annotation can only be placed on a TYPE e.g. class
 @Retention(RetentionPolicy.RUNTIME) // Used at runtime
-@Constraint(validatedBy = ValidFlightRequestImpl.class) // custom validator
-public @interface ValidFlightRequest {
+@Constraint(validatedBy = DepartureBeforeArrivalImpl.class) // custom validator
+public @interface DepartureBeforeArrival {
     String message() default "The arrival time must be after the departure time";
 
     Class<?>[] groups() default {}; // required by springboot

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/flight")
@@ -40,6 +41,15 @@ public class FlightController {
     public ResponseEntity<FlightDetailsDto> getScheduledFlightDetails(@RequestParam int id) {
         FlightDetailsDto flightDetailsDto = flightSchedulingService.getScheduledFlightDetailsById(id);
         return ResponseEntity.ok(flightDetailsDto);
+    }
+
+    @GetMapping(path = "/search")
+    public ResponseEntity<FlightListDto> searchScheduledFlights(
+            @RequestParam(required = false) String departure,
+            @RequestParam(required = false) String destination,
+            @RequestParam(required = false) LocalDate date
+    ) {
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(path = ":/id")

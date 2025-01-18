@@ -11,5 +11,4 @@ public class ScheduleApplication {
     }
 
     // http://localhost:8080/swagger-ui/index.html
-    // TODO: validaition on request parameter (what if empty, what if not correct type)
 }

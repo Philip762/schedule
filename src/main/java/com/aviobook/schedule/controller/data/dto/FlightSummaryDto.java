@@ -1,5 +1,8 @@
 package com.aviobook.schedule.controller.data.dto;
 
+import lombok.Builder;
+
+@Builder
 public record FlightSummaryDto(
         int id,
         String number

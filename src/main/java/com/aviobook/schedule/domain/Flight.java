@@ -1,10 +1,7 @@
 package com.aviobook.schedule.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -26,7 +23,8 @@ public class Flight {
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
 
-    public Flight(String number, String departure, String destination, LocalDateTime departureTime, LocalDateTime arrivalTime) {
+    @Builder
+    private Flight(String number, String departure, String destination, LocalDateTime departureTime, LocalDateTime arrivalTime) {
         this.number = number;
         this.departure = departure;
         this.destination = destination;
