@@ -8,4 +8,3 @@ services:
       MYSQL_USER: 'philip'
       MYSQL_PASSWORD: 'StrongPassword'
       MYSQL_ROOT_PASSWORD: 'RootPassword'
-
