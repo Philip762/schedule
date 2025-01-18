@@ -1,6 +1,6 @@
 package com.aviobook.schedule.controller;
 
-import com.aviobook.schedule.controller.data.dto.FlightDetailsDto;
+import com.aviobook.schedule.controller.data.dto.FlightDto;
 import com.aviobook.schedule.controller.data.dto.FlightListDto;
 import com.aviobook.schedule.controller.data.request.ScheduleFlightRequest;
 import com.aviobook.schedule.service.FlightSchedulingService;
@@ -25,8 +25,8 @@ public class FlightController {
     }
 
     @PostMapping
-    public ResponseEntity<FlightDetailsDto> scheduleFlight(@RequestBody @Valid ScheduleFlightRequest scheduleFlightRequest, HttpServletRequest request) {
-        FlightDetailsDto scheduledFlight = flightSchedulingService.scheduleFlight(scheduleFlightRequest);
+    public ResponseEntity<FlightDto> scheduleFlight(@RequestBody @Valid ScheduleFlightRequest scheduleFlightRequest, HttpServletRequest request) {
+        FlightDto scheduledFlight = flightSchedulingService.scheduleFlight(scheduleFlightRequest);
         URI location = URI.create(String.format("%s/%s", request.getRequestURI(), scheduledFlight.id()));
         return ResponseEntity.created(location).body(scheduledFlight);
     }
@@ -38,8 +38,8 @@ public class FlightController {
     }
 
     @GetMapping(path = "/:id")
-    public ResponseEntity<FlightDetailsDto> getScheduledFlightDetails(@RequestParam int id) {
-        FlightDetailsDto flightDetailsDto = flightSchedulingService.getScheduledFlightDetailsById(id);
+    public ResponseEntity<FlightDto> getScheduledFlightDetails(@RequestParam int id) {
+        FlightDto flightDetailsDto = flightSchedulingService.getScheduledFlightDetailsById(id);
         return ResponseEntity.ok(flightDetailsDto);
     }
 

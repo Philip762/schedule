@@ -1,10 +1,12 @@
 package com.aviobook.schedule.service.impl;
 
 import com.aviobook.schedule.controller.data.dto.FlightDetailsDto;
+import com.aviobook.schedule.controller.data.dto.FlightDto;
 import com.aviobook.schedule.controller.data.dto.FlightListDto;
 import com.aviobook.schedule.controller.data.dto.FlightSummaryDto;
 import com.aviobook.schedule.controller.data.request.ScheduleFlightRequest;
 import com.aviobook.schedule.domain.Flight;
+import com.aviobook.schedule.domain.FlightDetails;
 import com.aviobook.schedule.exception.DuplicateFlightNumberException;
 import com.aviobook.schedule.exception.ResourceNotFoundException;
 import com.aviobook.schedule.repository.FlightRepository;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -36,11 +39,16 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
     }
 
     @Override
-    public FlightDetailsDto scheduleFlight(ScheduleFlightRequest scheduleFlightRequest) {
+    public FlightDto scheduleFlight(ScheduleFlightRequest scheduleFlightRequest) {
         if (flightRepository.existsByNumber(scheduleFlightRequest.number())) {
             String message = String.format("Flight with number %s already exists", scheduleFlightRequest.number());
             throw new DuplicateFlightNumberException(message);
         }
+
+        FlightDetails flightDetails = FlightDetails.builder()
+                .passengerCount(scheduleFlightRequest.details().passengerCount())
+                .aircraft(scheduleFlightRequest.details().aircraft())
+                .build();
 
         Flight flight = Flight.builder()
                 .number(scheduleFlightRequest.number())
@@ -48,6 +56,7 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
                 .destination(scheduleFlightRequest.destination())
                 .departureTime(scheduleFlightRequest.departureTime().truncatedTo(ChronoUnit.MINUTES))
                 .arrivalTime(scheduleFlightRequest.arrivalTime().truncatedTo(ChronoUnit.MINUTES))
+                .details(flightDetails)
                 .build();
 
         Flight scheduledFlight = flightRepository.save(flight);
@@ -61,7 +70,8 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
     }
 
     @Override
-    public FlightDetailsDto getScheduledFlightDetailsById(int id) {
+    @Transactional(readOnly = true)
+    public FlightDto getScheduledFlightDetailsById(int id) {
         Flight flight = flightRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found", Flight.class));
 
@@ -89,14 +99,21 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
         return flightListToDto(scheduledFlights);
     }
 
-    private FlightDetailsDto flightToDto(Flight flight) {
-        return FlightDetailsDto.builder()
+    private FlightDto flightToDto(Flight flight) {
+        FlightDetails details = flight.getDetails();
+
+        return FlightDto.builder()
                 .id(flight.getId())
                 .number(flight.getNumber())
                 .departure(flight.getDeparture())
                 .destination(flight.getDestination())
                 .departureTime(flight.getDepartureTime())
                 .arrivalTime(flight.getArrivalTime())
+                .details(FlightDetailsDto.builder()
+                        .passengerCount(details.getPassengerCount())
+                        .aircraft(details.getAircraft())
+                        .build()
+                )
                 .build();
     }
 

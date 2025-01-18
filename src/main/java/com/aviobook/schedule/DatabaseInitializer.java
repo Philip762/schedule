@@ -1,6 +1,7 @@
 package com.aviobook.schedule;
 
 import com.aviobook.schedule.domain.Flight;
+import com.aviobook.schedule.domain.FlightDetails;
 import com.aviobook.schedule.repository.FlightRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Random;
 
 @Component
 public class DatabaseInitializer implements CommandLineRunner {
@@ -44,10 +46,19 @@ public class DatabaseInitializer implements CommandLineRunner {
 
     /*-----------Seed data------------*/
 
+    private static final Random RANDOM = new Random();
+
     private static final LocalDateTime DEPARTURE_TIME = LocalDateTime.now()
             .truncatedTo(ChronoUnit.HOURS)
             .plusDays(1)
             .withHour(6);
+
+    private static FlightDetails createRandomFlightDetails() {
+        return FlightDetails.builder()
+                .passengerCount(RANDOM.nextInt(51) + 30)
+                .aircraft("Airbus A380")
+                .build();
+    }
 
     private static final LocalDateTime ARRIVAL_TIME = DEPARTURE_TIME.plusHours(3);
 
@@ -58,6 +69,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .destination("GCTS")
                     .departureTime(DEPARTURE_TIME)
                     .arrivalTime(ARRIVAL_TIME)
+                    .details(createRandomFlightDetails())
                     .build(),
             Flight.builder()
                     .number("BE142")
@@ -65,6 +77,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .destination("GCTS")
                     .departureTime(DEPARTURE_TIME.plusHours(6))
                     .arrivalTime(ARRIVAL_TIME.plusHours(6))
+                    .details(createRandomFlightDetails())
                     .build(),
             Flight.builder()
                     .number("BE782")
@@ -72,6 +85,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .destination("GCTS")
                     .departureTime(DEPARTURE_TIME.plusDays(1))
                     .arrivalTime(ARRIVAL_TIME.plusDays(1))
+                    .details(createRandomFlightDetails())
                     .build(),
             Flight.builder()
                     .number("BE333")
@@ -79,6 +93,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .destination("GCTS")
                     .departureTime(DEPARTURE_TIME)
                     .arrivalTime(ARRIVAL_TIME)
+                    .details(createRandomFlightDetails())
                     .build(),
             Flight.builder()
                     .number("BE983")
@@ -86,6 +101,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .destination("GCTS")
                     .departureTime(DEPARTURE_TIME.plusDays(1))
                     .arrivalTime(ARRIVAL_TIME.plusDays(1))
+                    .details(createRandomFlightDetails())
                     .build()
     };
 }

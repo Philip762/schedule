@@ -2,6 +2,7 @@ package com.aviobook.schedule.controller.data.request;
 
 import com.aviobook.schedule.controller.data.validation.DepartureBeforeArrival;
 import com.aviobook.schedule.controller.data.validation.MaxFlightDuration;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,6 +31,9 @@ public record ScheduleFlightRequest(
 
         @NotNull(message = "Arrival time is required")
         @Future(message = "Arrival time should be in the future")
-        LocalDateTime arrivalTime
+        LocalDateTime arrivalTime,
+
+        @Valid
+        ScheduleFlightDetailsRequest details
 ) {
 }
