@@ -20,6 +20,9 @@ public class DatabaseInitializer implements CommandLineRunner {
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
+    @Value("${api.url}")
+    private String url;
+
     private final Logger LOGGER = LoggerFactory.getLogger(DatabaseInitializer.class);
 
     private final FlightRepository flightRepository;
@@ -34,6 +37,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             return;
         }
 
+        LOGGER.debug("Swagger UI available at: {}/swagger-ui/index.html", url);
         if (flightRepository.count() > 0) {
             LOGGER.debug("Database already seeded");
             return;
@@ -44,7 +48,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         LOGGER.debug("Seeded database with {} records", INITIAL_FLIGHT_DATA.length);
     }
 
-    /*-----------Seed data------------*/
+    /*--------------------------Seed data---------------------------*/
 
     private static final Random RANDOM = new Random();
 
@@ -71,6 +75,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .arrivalTime(ARRIVAL_TIME)
                     .details(createRandomFlightDetails())
                     .build(),
+
             Flight.builder()
                     .number("BE142")
                     .departure("DBBR")
@@ -79,6 +84,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .arrivalTime(ARRIVAL_TIME.plusHours(6))
                     .details(createRandomFlightDetails())
                     .build(),
+
             Flight.builder()
                     .number("BE782")
                     .departure("DBBR")
@@ -87,6 +93,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .arrivalTime(ARRIVAL_TIME.plusDays(1))
                     .details(createRandomFlightDetails())
                     .build(),
+
             Flight.builder()
                     .number("BE333")
                     .departure("MEER")
@@ -95,6 +102,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                     .arrivalTime(ARRIVAL_TIME)
                     .details(createRandomFlightDetails())
                     .build(),
+
             Flight.builder()
                     .number("BE983")
                     .departure("MEER")
