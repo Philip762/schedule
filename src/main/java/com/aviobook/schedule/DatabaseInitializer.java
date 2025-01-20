@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -15,10 +16,8 @@ import java.util.List;
 import java.util.Random;
 
 @Component
+@Profile("dev") // Only load when in dev mode
 public class DatabaseInitializer implements CommandLineRunner {
-
-    @Value("${spring.profiles.active}")
-    private String activeProfile;
 
     @Value("${api.url}")
     private String url;
@@ -33,19 +32,13 @@ public class DatabaseInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (!activeProfile.equals("dev")) {
-            return;
-        }
-
-        LOGGER.debug("Swagger UI available at: {}/swagger-ui/index.html", url);
         if (flightRepository.count() > 0) {
-            LOGGER.debug("Database already seeded");
-            return;
+            LOGGER.info("Database already seeded");
+        } else {
+            flightRepository.saveAll(List.of(INITIAL_FLIGHT_DATA));
+            LOGGER.info("Seeded database with {} records", INITIAL_FLIGHT_DATA.length);
         }
-
-        flightRepository.saveAll(List.of(INITIAL_FLIGHT_DATA));
-
-        LOGGER.debug("Seeded database with {} records", INITIAL_FLIGHT_DATA.length);
+        LOGGER.info("Swagger UI available at: {}/swagger-ui/index.html", url);
     }
 
     /*--------------------------Seed data---------------------------*/

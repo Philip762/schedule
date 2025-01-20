@@ -31,7 +31,7 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(ResourceNotFoundException exception) {
         String message = String.format("%s not found", exception.getResourceClass().getSimpleName());
-        ErrorResponseDto responseBody = new ErrorResponseDto(message, null);
+        ErrorResponseDto responseBody = new ErrorResponseDto(message);
         return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
     }
 
@@ -39,12 +39,15 @@ public class RestControllerExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleDuplicateFlightNumberException(
             DuplicateFlightNumberException exception
     ) {
-        ErrorResponseDto responseBody = new ErrorResponseDto("A flight with the given number already exists", null);
+        ErrorResponseDto responseBody = new ErrorResponseDto("A flight with the given number already exists");
         return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
     }
 
+    // Error response body template
     @JsonInclude(Include.NON_NULL) // remove fields that are null
     public record ErrorResponseDto(String message, List<String> details) {
-        // Error response body template
+        public ErrorResponseDto(String message) {
+            this(message, null);
+        }
     }
 }
