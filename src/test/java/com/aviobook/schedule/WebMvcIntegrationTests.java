@@ -2,10 +2,15 @@ package com.aviobook.schedule;
 
 import com.aviobook.schedule.controller.data.request.ScheduleFlightDetailsRequest;
 import com.aviobook.schedule.controller.data.request.ScheduleFlightRequest;
+import com.aviobook.schedule.data.FlightDataGenerator;
+import com.aviobook.schedule.data.InvalidFlightRequestTestCases;
+import com.aviobook.schedule.domain.Flight;
 import com.aviobook.schedule.repository.FlightRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,12 +27,21 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Random;
+
+import static org.hamcrest.Matchers.containsString;
 
 @Testcontainers
+@SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@SpringBootTest
-public class WebMvcIntegrationTests {
+class WebMvcIntegrationTests {
+
+    private final String API_ENDPOINT = "/api/flight";
+
+    private final Random RANDOM = new Random();
 
     @Autowired
     private MockMvc mockMvc;
@@ -35,11 +49,11 @@ public class WebMvcIntegrationTests {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Container
-    private static final MySQLContainer<?> mySql = new MySQLContainer<>("mysql:8.0.40-debian");
-
     @Autowired
     private FlightRepository flightRepository;
+
+    @Container
+    private static final MySQLContainer<?> mySql = new MySQLContainer<>("mysql:8.0.40-debian");
 
     @DynamicPropertySource
     private static void setProperties(DynamicPropertyRegistry registry) {
@@ -54,9 +68,8 @@ public class WebMvcIntegrationTests {
     }
 
     @Test
-    void GetAllFlights() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .get("/api/flight");
+    void getAllFlightsShouldReturnEmptyListWhenDatabaseIsEmpty() throws Exception {
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(API_ENDPOINT);
 
         mockMvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -66,7 +79,21 @@ public class WebMvcIntegrationTests {
     }
 
     @Test
-    void PostFlight() throws Exception {
+    void getAllFlightsShouldReturnAllFlightsInTheDatabaseWithoutTheirDetails() throws Exception {
+        Flight[] data = FlightDataGenerator.generateMultipleRandomFlights(RANDOM.nextInt(10) + 2);
+        flightRepository.saveAll(Arrays.asList(data));
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(API_ENDPOINT);
+
+        mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.flights").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.flights.size()").value(data.length))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.flights[*].details").doesNotExist());
+    }
+
+    @Test
+    void postValidFlightShouldReturnThePostedFlightWithAnId() throws Exception {
         ScheduleFlightRequest scheduleFlightRequest = new ScheduleFlightRequest(
                 "AA992",
                 "BBRD",
@@ -76,18 +103,64 @@ public class WebMvcIntegrationTests {
                 new ScheduleFlightDetailsRequest(40, "Boeing 747")
         );
 
-        String requestBody = objectMapper.writeValueAsString(scheduleFlightRequest);
-
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .post("/api/flight")
+                .post(API_ENDPOINT)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody);
+                .content(objectMapper.writeValueAsString(scheduleFlightRequest));
 
         mockMvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isMap())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(scheduleFlightRequest.number()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(scheduleFlightRequest.number()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.departure").value(scheduleFlightRequest.departure()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.destination").value(scheduleFlightRequest.destination()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.departureTime")
+                        .value(containsString(scheduleFlightRequest.departureTime().truncatedTo(ChronoUnit.MINUTES).toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details").isMap());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(InvalidFlightRequestTestCases.class)
+    void postFlightWithInvalidDataShouldReturnBadRequestWithValidationErrors(
+            ScheduleFlightRequest requestBody,
+            int validationErrorCount
+    ) throws Exception {
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(API_ENDPOINT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestBody));
+
+        mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details.size()").value(validationErrorCount));
+    }
+
+    @Test
+    void postFlightWithSameFlightNumberShouldReturnBadRequest() throws Exception {
+        ScheduleFlightRequest requestBody = new ScheduleFlightRequest(
+                "AA992",
+                "BBRD",
+                "DDEZ",
+                LocalDateTime.now().plusHours(6),
+                LocalDateTime.now().plusHours(8),
+                new ScheduleFlightDetailsRequest(40, "Boeing 747")
+        );
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(API_ENDPOINT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestBody));
+
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.details").doesNotExist());
     }
 
 

@@ -26,7 +26,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class FlightServiceImplTests {
+class FlightServiceImplTests {
 
     @Mock
     private FlightRepository flightRepository;
@@ -35,7 +35,7 @@ public class FlightServiceImplTests {
     private FlightSchedulingServiceImpl flightSchedulingService;
 
     @Test
-    public void cancelScheduledFlightByIdShouldDeleteFlightWhenPresentInDatabase() {
+    void cancelScheduledFlightByIdShouldDeleteFlightWhenPresentInDatabase() {
         when(flightRepository.existsById(anyInt())).thenReturn(true);
         doNothing().when(flightRepository).deleteById(anyInt());
         int flightId = new Random().nextInt();
@@ -47,7 +47,7 @@ public class FlightServiceImplTests {
     }
 
     @Test
-    public void cancelScheduledFlightByIdShouldThrowExceptionWhenNotPresentInDatabase() {
+    void cancelScheduledFlightByIdShouldThrowExceptionWhenNotPresentInDatabase() {
         when(flightRepository.existsById(anyInt())).thenReturn(false);
         int flightId = new Random().nextInt();
 
@@ -61,7 +61,7 @@ public class FlightServiceImplTests {
     }
 
     @Test
-    public void getScheduledFlightDetailsByIdShouldThrowExceptionWhenNotPresentInDatabase() {
+    void getScheduledFlightDetailsByIdShouldThrowExceptionWhenNotPresentInDatabase() {
         when(flightRepository.findById(anyInt())).thenReturn(Optional.empty());
         int flightId = new Random().nextInt();
 
@@ -74,7 +74,7 @@ public class FlightServiceImplTests {
     }
 
     @Test
-    public void scheduleFlightShouldReturnFlightDtoWithTimesTruncated() {
+    void scheduleFlightShouldReturnFlightDtoWithTimesTruncated() {
         when(flightRepository.existsByNumber(anyString())).thenReturn(false);
         when(flightRepository.save(Mockito.any(Flight.class)))
                 .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
@@ -101,7 +101,7 @@ public class FlightServiceImplTests {
     }
 
     @Test
-    public void scheduleFlightShouldThrowExceptionWhenFlightNumberAlreadyExists() {
+    void scheduleFlightShouldThrowExceptionWhenFlightNumberAlreadyExists() {
         when(flightRepository.existsByNumber(anyString())).thenReturn(true);
         ScheduleFlightRequest request = new ScheduleFlightRequest(
                 "AB228",
