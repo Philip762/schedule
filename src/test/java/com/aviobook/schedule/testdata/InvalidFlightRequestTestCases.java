@@ -1,4 +1,4 @@
-package com.aviobook.schedule.data;
+package com.aviobook.schedule.testdata;
 
 import com.aviobook.schedule.controller.data.request.ScheduleFlightDetailsRequest;
 import com.aviobook.schedule.controller.data.request.ScheduleFlightRequest;

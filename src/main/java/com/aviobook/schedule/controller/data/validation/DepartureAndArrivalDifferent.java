@@ -1,6 +1,6 @@
 package com.aviobook.schedule.controller.data.validation;
 
-import com.aviobook.schedule.controller.data.validation.impl.MaxFlightDurationImpl;
+import com.aviobook.schedule.controller.data.validation.impl.DepartureAndArrivalDifferentImpl;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = MaxFlightDurationImpl.class)
+@Constraint(validatedBy = DepartureAndArrivalDifferentImpl.class)
 public @interface DepartureAndArrivalDifferent {
     String message() default "The departure cannot be the same as the destination";
 
