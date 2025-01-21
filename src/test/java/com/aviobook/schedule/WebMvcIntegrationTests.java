@@ -163,5 +163,52 @@ class WebMvcIntegrationTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.details").doesNotExist());
     }
 
+    @Test
+    void searchByDepartureShouldReturnFlightsThatMatch() {
+        Flight[] flights = FlightDataGenerator.generateMultipleRandomFlights(RANDOM.nextInt(5) + 2);
+
+
+    }
+
+    @Test
+    void searchByArrivalShouldReturnFlightsThatMatch() {
+
+    }
+
+    @Test
+    void searchByDateShouldReturnFlightsThatMatch() {
+
+    }
+
+
+    @Test
+    @ArgumentsSource(InvalidFlightRequestTestCases.class)
+    void searchScheduledFlightShouldReturnFlightsMatchingTheSearchCriteria() {
+        // put 5 flights in the database
+        // search based in criteria (depart, arrive, date)
+        // check amount of results
+        // check if flight numbers match
+    }
+
+    @Test
+    void cancelFlightShouldRemoveTheFlightFromTheDatabase() {
+        // put flight in db
+        // remove
+        // get flight and check 404
+    }
+
+    @Test
+    void cancelFlightShouldReturnNotFoundWhenFlightDoesNotExist() {
+
+    }
+
+    void getFlightDetailsShouldReturnFullFlightInformation() {
+
+    }
+
+    void getFlightDetailsShouldReturnNotFoundWhenFlightDoesNotExist() {
+
+    }
+
 
 }

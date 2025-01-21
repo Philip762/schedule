@@ -7,6 +7,9 @@ import java.time.LocalDate;
 
 // Query components used to search for scheduled flights
 public class FlightSearchSpecification {
+    private FlightSearchSpecification() {
+    }
+
     public static Specification<Flight> byDeparture(String departure) {
         return (root, query, cb) ->
                 departure == null ? null : cb.equal(root.get("departure"), departure);

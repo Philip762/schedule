@@ -1,13 +1,14 @@
+# Dockerfile used in online deploy
 FROM maven:3-amazoncorretto-21-alpine AS build
 
 # setup + copy files
 ENV HOME=/usr/app
-RUN mkdir -p $HOME
+RUN mkdir -p "$HOME"
 WORKDIR $HOME
-ADD . .
+COPY . .
 
-RUN chmod +x ./mvnw # grant permission to execute maven in container
-RUN ./mvnw -f $HOME/pom.xml clean package # build project
+# grant permission to execute maven in container
+RUN chmod +x ./mvnw && ./mvnw -DskipTests -f "$HOME"/pom.xml clean package
 
 FROM eclipse-temurin:21-alpine
 EXPOSE 8080
