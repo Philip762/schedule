@@ -71,17 +71,17 @@ public class FlightSchedulingServiceImpl implements FlightSchedulingService {
 
     @Override
     @Transactional(readOnly = true)
-    public FlightDto getScheduledFlightDetailsById(int id) {
+    public FlightDto getScheduledFlightDetailsById(long id) {
         Flight flight = flightRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Flight not found", Flight.class));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Flight with id: %s not found", id), Flight.class));
 
         return this.flightToDto(flight);
     }
 
     @Override
-    public void cancelScheduledFlightById(int id) {
+    public void cancelScheduledFlightById(long id) {
         if (!flightRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Flight not found", Flight.class);
+            throw new ResourceNotFoundException(String.format("Flight with id: %s not found", id), Flight.class);
         }
 
         flightRepository.deleteById(id);

@@ -12,9 +12,9 @@ public interface FlightSchedulingService {
 
     FlightListDto getAllScheduledFlights();
 
-    FlightDto getScheduledFlightDetailsById(int id);
+    FlightDto getScheduledFlightDetailsById(long id);
 
-    void cancelScheduledFlightById(int id);
+    void cancelScheduledFlightById(long id);
 
     FlightListDto searchScheduledFlights(String departure, String destination, LocalDate date);
 }

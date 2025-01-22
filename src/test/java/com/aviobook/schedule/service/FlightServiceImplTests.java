@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -36,9 +36,9 @@ class FlightServiceImplTests {
 
     @Test
     void cancelScheduledFlightByIdShouldDeleteFlightWhenPresentInDatabase() {
-        when(flightRepository.existsById(anyInt())).thenReturn(true);
-        doNothing().when(flightRepository).deleteById(anyInt());
-        int flightId = new Random().nextInt();
+        when(flightRepository.existsById(anyLong())).thenReturn(true);
+        doNothing().when(flightRepository).deleteById(anyLong());
+        long flightId = new Random().nextLong();
 
         flightSchedulingService.cancelScheduledFlightById(flightId);
 
@@ -48,8 +48,8 @@ class FlightServiceImplTests {
 
     @Test
     void cancelScheduledFlightByIdShouldThrowExceptionWhenNotPresentInDatabase() {
-        when(flightRepository.existsById(anyInt())).thenReturn(false);
-        int flightId = new Random().nextInt();
+        when(flightRepository.existsById(anyLong())).thenReturn(false);
+        long flightId = new Random().nextLong();
 
         Assertions.assertThrows(
                 ResourceNotFoundException.class,
@@ -62,8 +62,8 @@ class FlightServiceImplTests {
 
     @Test
     void getScheduledFlightDetailsByIdShouldThrowExceptionWhenNotPresentInDatabase() {
-        when(flightRepository.findById(anyInt())).thenReturn(Optional.empty());
-        int flightId = new Random().nextInt();
+        when(flightRepository.findById(anyLong())).thenReturn(Optional.empty());
+        long flightId = new Random().nextLong();
 
         Assertions.assertThrows(
                 ResourceNotFoundException.class,
