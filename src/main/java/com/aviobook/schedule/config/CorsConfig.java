@@ -11,7 +11,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
                 // allow any localhost on any port to access the API
-                .allowedOriginPatterns("http://localhost(:[0-9]+)?")
+                .allowedOriginPatterns("http://localhost:[0-9]{1,4}")
                 .allowedOrigins("https://some-single-page-app.com")
                 .allowedMethods("OPTIONS", "GET", "POST", "DELETE");
     }
