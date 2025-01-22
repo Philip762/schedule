@@ -1,10 +1,31 @@
 services:
-  schedule_db:
+  schedule-api:
+    restart: no
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: mysql://schedule-db/${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      API_HOST_PORT: ${API_HOST_PORT}
+    ports:
+      - "${API_HOST_PORT}:8080"
+    depends_on:
+      schedule-db:
+        condition: service_healthy # wait until database is fully ready
+
+  schedule-db:
+    restart: no
     image: mysql:8.0.40-debian
     ports:
-      - "3000:3306" # host:container
+      - "${DATABASE_HOST_PORT}:3306" # host:container
     environment:
-      MYSQL_DATABASE: 'schedule_db'
-      MYSQL_USER: 'philip'
-      MYSQL_PASSWORD: 'StrongPassword'
-      MYSQL_ROOT_PASSWORD: 'RootPassword'
+      MYSQL_DATABASE: ${DATABASE_NAME}
+      MYSQL_USER: ${DATABASE_USER}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+    healthcheck: # ping database to check if it's ready
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 3s
+      retries: 10

@@ -1,4 +1,3 @@
-# Dockerfile used in online deploy
 FROM maven:3-amazoncorretto-21-alpine AS build
 
 # setup + copy files
@@ -14,4 +13,5 @@ FROM eclipse-temurin:21-alpine
 EXPOSE 8080
 COPY --from=build /usr/app/target/*.jar /app/runner.jar
 # start spirngboot and set the active profile to prod
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "/app/runner.jar"]
+ENTRYPOINT ["java", "-jar", "/app/runner.jar"]
+
