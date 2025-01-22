@@ -10,8 +10,9 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                // allow dev environment to access the API
-                .allowedOrigins("http://localhost:5000", "https://some-single-page-app.com")
+                // allow localhost on any port to access the API
+                .allowedOriginPatterns("http://localhost:[*]")
+                .allowedOrigins("https://some-single-page-app.com")
                 .allowedMethods("OPTIONS", "GET", "POST", "DELETE");
     }
 }
