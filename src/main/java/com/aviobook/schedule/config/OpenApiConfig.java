@@ -19,18 +19,18 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI myOpenAPI() {
-        Server devServer = new Server();
-        devServer.setUrl(url);
-        devServer.setDescription("Server URL in Development environment");
+        Server devServer = new Server()
+                .url(url)
+                .description("Server URL in Development environment");
 
-        Server prodServer = new Server();
-        prodServer.setUrl("https://schedule-api-0nlu.onrender.com");
-        prodServer.setDescription("Server URL in Production environment");
+        Server prodServer = new Server()
+                .url("https://schedule-api-0nlu.onrender.com")
+                .description("Server URL in Production environment");
 
         Info info = new Info()
                 .title("Flight scheduling API")
                 .version("1.0")
-                .summary("This API is used to schedule and manage airline flights.");
+                .summary("Schedule, view and cancel flights");
 
         return new OpenAPI()
                 .servers(List.of(devServer, prodServer))
