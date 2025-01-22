@@ -1,6 +1,10 @@
 .idea
 target
+.env
 .gitattributes
 .gitignore
+Dockerfile
 docker-compose.yml
 mvnw.cmd
+README.md
+schedule.iml
